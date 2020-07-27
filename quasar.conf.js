@@ -103,7 +103,7 @@ module.exports = function (/* ctx */) {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: `Quasar App`,
+        name: `Data Check`,
         short_name: `Quasar App`,
         description: `A Quasar Framework app`,
         display: 'standalone',

@@ -3,7 +3,8 @@
     clickable
     tag="a"
     target="_blank"
-    :href="link"
+    @click="onClick()"
+    v-bind:class="{ selected: isSelected }"
   >
     <q-item-section
       v-if="icon"
@@ -14,25 +15,17 @@
 
     <q-item-section>
       <q-item-label>{{ title }}</q-item-label>
-      <q-item-label caption>
-        {{ caption }}
-      </q-item-label>
     </q-item-section>
   </q-item>
 </template>
 
 <script>
 export default {
-  name: 'EssentialLink',
+  name: 'MyMenu',
   props: {
     title: {
       type: String,
       required: true
-    },
-
-    caption: {
-      type: String,
-      default: ''
     },
 
     link: {
@@ -43,7 +36,26 @@ export default {
     icon: {
       type: String,
       default: ''
+    },
+
+    isSelected: {
+      type: Boolean,
+      default: false,
+      required: true
+    }
+  },
+  methods:{
+    onClick(){
+      console.log(this.$router)
+      if(this.$route.path != this.link)
+        this.$router.push(this.link);
+      this.$emit('click');
     }
   }
 }
 </script>
+
+<style lang="sass">
+.selected
+  background-color: $grey-5
+</style>
