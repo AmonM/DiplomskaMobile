@@ -1,33 +1,31 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header elevated style="height: 3.2222rem">
+  <q-layout view="hHh LpR lff">
+    <q-header elevated style="height: 3.2222rem" class="q-pt-sm">
       <q-toolbar>
-        <q-btn
+        <!--<q-btn
           flat
           dense
           round
           icon="menu"
           aria-label="Menu"
           @click="leftDrawerOpen = !leftDrawerOpen"
-        />
+        /> -->
 
         <q-toolbar-title>
-          Quasar App
+          Seznam eksperimentov
         </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
       </q-toolbar>
     </q-header>
 
-    <q-drawer
+    <!--<q-drawer
       v-model="leftDrawerOpen"
       show-if-above
-      bordered
-      content-class="bg-grey-1"
+      content-class="bg-grey-4"
     >
       <q-list>
-        <q-item-label header class="text-grey-8">
-          Essential Links
+        <q-item-label header class="text-white bg-primary" style="height: 3.2222rem; font-size: 1.3rem">
+          Meni
         </q-item-label>
         <MyMenu
           v-for="link in essentialLinks"
@@ -36,10 +34,10 @@
           @click="newSelected(link.title)"
         />
       </q-list>
-    </q-drawer>
+    </q-drawer> -->
 
-    <q-page-container style="max-height: 10px">
-      <router-view />
+    <q-page-container class="content" >
+      <router-view style="height:10%"/>
     </q-page-container>
   </q-layout>
 </template>
@@ -100,16 +98,11 @@ export default {
       }
       this.$router.push("/");
     }
-    this.$nextTick(() => {
-      window.screen.orientation
-        .lock("landscape")
-        .then(response => {
-          console.log(response);
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    });
   }
 };
 </script>
+
+<style lang="sass" scoped>
+.content
+  height: calc(100% - 3.2222rem)
+</style>

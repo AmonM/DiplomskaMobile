@@ -1,11 +1,12 @@
 <template>
-  <q-page class="q-ma-md">
+  <q-page class="q-pa-md">
     <highcharts :options="Temperature" class="full-width"></highcharts>
   </q-page>
 </template>
 
 <script>
 import { Chart } from "highcharts-vue";
+import { Utils } from "./../Utils.js";
 
 export default {
   components: {
@@ -15,7 +16,7 @@ export default {
     return {
       Temperature: {
         chart: {
-          height: (6 / 16) * 100 + "%",
+          height: (5.8 / 16) * 100 + "%",
           type: "spline",
           zoomType: "x",
           redraw: true
@@ -43,16 +44,6 @@ export default {
       }
     };
   },
-  beforeDestroy() {
-    window.screen.orientation
-      .lock("portrait-primary")
-      .then(response => {
-        console.log(response);
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  },
   created() {
     this.$axios
       .get("/getData?expID=4")
@@ -62,34 +53,15 @@ export default {
         for (var index in DataArray) {
           this.Temperature.series[0].data.push(DataArray[index].Temperature);
         }
-
-        var povp = new Array();
-
-        for (var i = 0; i < this.Temperature.series[0].data.length; i++) {
-          if (i != 0 && i < this.Temperature.series[0].data.length - 2) {
-            povp[i] =
-              (this.Temperature.series[0].data[i - 1] +
-                this.Temperature.series[0].data[i] +
-                this.Temperature.series[0].data[i + 1] +
-                this.Temperature.series[0].data[i + 2]) /
-              4;
-          } else if (i == 0) {
-            povp[i] =
-              (this.Temperature.series[0].data[i + 1] +
-                this.Temperature.series[0].data[i] +
-                this.Temperature.series[0].data[i + 2]) /
-              3;
-          } else {
-            povp[i] =
-              (this.Temperature.series[0].data[i - 1] +
-                this.Temperature.series[0].data[i]) /
-              2;
-          }
-        }
-        this.Temperature.series[1].data = povp;
+        this.Temperature.series[1].data = Utils.smoothData(
+          this.Temperature.series[0].data
+        );
       })
-      .catch(error => {
-        console.log(error);
+      .catch((error) =>{
+        this.$q.notify({
+          message: "Pridobivanje podatkov ni uspelo.",
+          color: "negative"
+        });
       });
 
     this.$nextTick(() => {

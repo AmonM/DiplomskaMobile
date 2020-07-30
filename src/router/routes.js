@@ -9,6 +9,13 @@ const routes = [
       { path: 'humidity', component: () => import('pages/Humidity.vue') }
     ]
   },
+  {
+    path: '/experiment/:experiment',
+    component: () => import('layouts/EmptyLayout.vue'),
+    children: [
+      { path: '', name: "experiment", component: () => import('pages/Experiment.vue') },
+    ]
+  },
 
   // Always leave this as last one,
   // but you can also remove it
