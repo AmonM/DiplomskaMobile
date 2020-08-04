@@ -1,11 +1,13 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import SelectedExp from './modules/SelectedExp'
+import Experiments from './modules/Experiments'
 
-import actions from './modules'
 
 // import example from './module-example'
 
 Vue.use(Vuex)
+
 
 /*
  * If not building with SSR mode, you can
@@ -19,7 +21,8 @@ Vue.use(Vuex)
 export default function (/* { ssrContext } */) {
   const Store = new Vuex.Store({
     modules: {
-      actions
+      SelectedExp,
+      Experiments
     },
 
     // enable strict mode (adds overhead!)

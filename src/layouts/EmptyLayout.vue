@@ -1,6 +1,6 @@
 <template>
   <q-layout>
-    <q-header elevated style="height: 3.2222rem" class="q-pt-sm">
+    <q-header elevated>
       <q-toolbar>
         <q-btn
           flat
@@ -8,12 +8,33 @@
           round
           icon="arrow_back"
           aria-label="Menu"
-          @click="$router.go(-1)"
+          @click="
+            title = '';
+            $router.go(-1);
+          "
         />
 
         <q-toolbar-title class="title">
-          Pregled poskusa
+          {{ title }}
         </q-toolbar-title>
+
+        <q-btn
+          flat
+          dense
+          round
+          icon="refresh"
+          aria-label="Menu"
+          @click="$q.notify('refresh')"
+        />
+        <q-btn
+          v-if="this.$route.path != '/chart'"
+          flat
+          dense
+          round
+          icon="save"
+          aria-label="Menu"
+          @click="downloadFile()"
+        />
       </q-toolbar>
     </q-header>
     <q-page-container class="content">
@@ -23,18 +44,115 @@
 </template>
 
 <script>
+import { saveAs } from "file-saver";
+
 export default {
   name: "EmptyLayout",
   components: {},
   data() {
     return {
-        experiment: null,
+      filePath: undefined
     };
   },
-  created(){
-      this.experiment = this.$route.params.experiment
+  created() {},
+  methods: {
+    downloadFile() {
+      if(this.filePath){
+        
+      }
+
+      this.$axios({
+        url: `/getData?expID=${this.$store.state.SelectedExp.Exp.id}&download`,
+        method: "GET",
+        responseType: "blob" // important
+      })
+        .then(response => {
+          var filename = response.request
+            .getResponseHeader("Content-Disposition")
+            .split('"')[1];
+          var blob = new Blob([response.data], { type: response.data.type });
+          if (window.cordova && cordova.platformId !== "browser") {
+            var storageLocation = "";
+            switch (this.$q.platform.is.platform) {
+              case "android":
+                storageLocation = cordova.file.externalDataDirectory;
+                break;
+
+              case "ios":
+                storageLocation = cordova.file.documentsDirectory;
+                break;
+            }
+
+            var folderPath = storageLocation;
+
+            window.resolveLocalFileSystemURL(
+              folderPath,
+              function(dir) {
+                dir.getFile(
+                  filename,
+                  {
+                    create: true
+                  },
+                  function(file) {
+                    console.log(file)
+                    file.createWriter(
+                      function(fileWriter) {
+                        fileWriter.write(blob);
+
+                        fileWriter.onwriteend = function() {
+                          var url = file.toURL();
+                          console.log(file.toURL()+"");
+                          cordova.plugins.fileOpener2.open(url, "text/csv", {
+                            error: function error(err) {
+                              console.error(err);
+                            },
+                            success: function success() {
+                              console.log("success with opening the file");
+                            }
+                          });
+                        };
+
+                        fileWriter.onerror = function(err) {
+                          console.error(err);
+                        };
+                      },
+                      function(err) {
+                        console.log(blob)
+                        // failed
+                        console.error(err);
+                      }
+                    );
+                  },
+                  function(err) {
+                    //error je bil kle
+                    console.error(err);
+                  }
+                );
+              },
+              function(err) {
+                alert("Unable to download");
+                console.error(err);
+              }
+            );
+          } else {
+            saveAs(blob, filename);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
   },
-  methods: {}
+  computed: {
+    title: {
+      get() {
+        return this.$store.state.SelectedExp.Title || "Eksperiment";
+      },
+      set(value) {
+        this.$store.commit("SelectedExp/setTitle", value);
+      }
+    }
+  }
 };
 </script>
 

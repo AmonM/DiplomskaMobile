@@ -1,7 +1,13 @@
 import Vue from 'vue'
 import axios from 'axios'
 
-Vue.prototype.$axios = axios.create({
-    baseURL: 'http://192.168.0.18',
-    withCredentials: false
-  })
+const base = axios.create({
+  baseURL: 'http://192.168.0.8',
+  withCredentials: false
+})
+
+export default () => {
+  Vue.prototype.$axios = base
+}
+
+export { base }

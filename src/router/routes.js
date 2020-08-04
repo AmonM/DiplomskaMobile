@@ -4,9 +4,14 @@ const routes = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/Index.vue') },
-      { path: 'temperature', component: () => import('pages/Temperature.vue') },
-      { path: 'humidity', component: () => import('pages/Humidity.vue') }
+      { path: '', component: () => import('pages/Index.vue') }
+    ]
+  },
+  {
+    path: '/chart',
+    component: () => import('layouts/EmptyLayout.vue'),
+    children: [
+      { path: '', name: "chart", component: () => import('pages/chart.vue') },
     ]
   },
   {

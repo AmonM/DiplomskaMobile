@@ -1,6 +1,6 @@
 <template>
   <q-page class="q-pa-md">
-    <highcharts :options="Humidity" class="full-width"></highcharts>
+    <highcharts :options="chartOptions" class="full-width"></highcharts>
   </q-page>
 </template>
 
@@ -13,19 +13,30 @@ export default {
   },
   created() {
     this.$axios
-      .get("/getData?expID=4")
+      .get(`/getData?expID=${this.$store.state.SelectedExp.Exp.id}`)
       .then(response => {
         var DataArray = response.data;
-
         for (var index in DataArray) {
-          this.Humidity.series[0].data.push(DataArray[index].Humidity);
+          switch (String(this.$store.state.SelectedExp.Title).toLowerCase()) {
+            case "temperatura":
+              this.chartOptions.series[0].data.push(
+                DataArray[index].Temperature
+              );
+              break;
+            case "vlaga":
+              this.chartOptions.series[0].data.push(DataArray[index].Humidity);
+              break;
+            //TO-DO dokoncaj.
+            default:
+              break;
+          }
         }
 
-        this.Humidity.series[1].data = Utils.smoothData(
-          this.Humidity.series[0].data
+        this.chartOptions.series[1].data = Utils.smoothData(
+          this.chartOptions.series[0].data
         );
       })
-      .catch(function(error){
+      .catch(() => {
         this.$q.notify({
           message: "Pridobivanje podatkov ni uspelo.",
           color: "negative"
@@ -45,7 +56,7 @@ export default {
   },
   data() {
     return {
-      Humidity: {
+      chartOptions: {
         chart: {
           height: (5.8 / 16) * 100 + "%",
           type: "spline",
