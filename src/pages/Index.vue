@@ -27,7 +27,6 @@ export default {
   data() {
     return {
       sensors: undefined,
-      experiments: []
     };
   },
   created() {
@@ -45,54 +44,14 @@ export default {
   },
   methods: {
     loadData() {
-      console.log("Tukaj!")
-      this.$axios
-        .get("/getInfo")
-        .then(response => {
-          var DataArray = response.data;
-          var experiment;
-
-          for (var data in response.data) {
-            experiment = new Object();
-            experiment.id = DataArray[data].exp_ID;
-            experiment.name = DataArray[data].exp_name;
-            experiment.desc = DataArray[data].exp_desc;
-            if (DataArray[data].exp_start_date)
-              experiment.start = new Date(
-                DataArray[data].exp_start_date.replace(" ", "T")
-              ).toLocaleString();
-            if (DataArray[data].exp_end_date)
-              experiment.end = new Date(
-                DataArray[data].exp_end_date.replace(" ", "T")
-              ).toLocaleString();
-            experiment.sensors = {};
-
-            experiment.sensors[1] = {
-              name: "Co2",
-              on: DataArray[data].Co2 ? true : false
-            };
-            experiment.sensors[2] = {
-              name: "C2H4",
-              on: DataArray[data].C2H4 ? true : false
-            };
-            experiment.sensors[3] = {
-              name: "O2",
-              on: DataArray[data].O2 ? true : false
-            };
-            experiment.sensors[4] = {
-              name: "RH",
-              on: DataArray[data].RH ? true : false
-            };
-            experiment.sensors[5] = {
-              name: "T",
-              on: DataArray[data].T ? true : false
-            };
-            this.experiments.push(experiment);
-          }
-        })
-        .catch(error => {
-          console.log(error);
-        });
+      this.$store.dispatch("Experiments/fetchExperiments");
+    }
+  },
+  computed:{
+    experiments:{
+      get(){
+        return this.$store.state.Experiments.experiments;
+      }
     }
   }
 };

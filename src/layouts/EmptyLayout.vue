@@ -24,7 +24,7 @@
           round
           icon="refresh"
           aria-label="Menu"
-          @click="$q.notify('refresh')"
+          @click="refresh()"
         />
         <q-btn
           v-if="this.$route.path != '/chart'"
@@ -57,10 +57,6 @@ export default {
   created() {},
   methods: {
     downloadFile() {
-      if(this.filePath){
-        
-      }
-
       this.$axios({
         url: `/getData?expID=${this.$store.state.SelectedExp.Exp.id}&download`,
         method: "GET",
@@ -141,6 +137,27 @@ export default {
         .catch(error => {
           console.log(error);
         });
+    },
+    notification(message, color){
+      if(this.$q.platform.is.desktop){
+        this.$q.notify({
+          message: message,
+          color: color,
+          position: "top"
+        })
+      }else{
+        this.$q.notify({
+          message: message,
+          color: color
+        })
+      }
+    },
+    refresh(){
+      this.$store.dispatch("SelectedExp/fetchData",this.$route.params.experiment).then(message =>{
+        this.notification(message, "info")
+      }).catch(error =>{
+        this.notification(error, "negative")
+      });
     }
   },
   computed: {

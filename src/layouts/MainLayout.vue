@@ -11,6 +11,14 @@
           flat
           dense
           round
+          icon="refresh"
+          aria-label="Menu"
+          @click="refresh();"
+        />
+        <q-btn
+          flat
+          dense
+          round
           icon="add"
           @click="addExp()"
         />
@@ -24,67 +32,40 @@
 </template>
 
 <script>
-import MyMenu from "components/MyMenu.vue";
-
-const linksData = [
-  {
-    title: "Glavna stran",
-    icon: "home",
-    link: "/",
-    isSelected: true
-  },
-  {
-    title: "Graf temperature",
-    icon: "insert_chart",
-    link: "/temperature",
-    isSelected: false
-  },
-  {
-    title: "Graf vlage",
-    icon: "insert_chart",
-    link: "/humidity",
-    isSelected: false
-  }
-];
 
 export default {
   name: "MainLayout",
-  components: { MyMenu },
+  components: {},
   data() {
     return {
-      leftDrawerOpen: false,
-      essentialLinks: linksData,
-      selected: null
     };
   },
   methods: {
-    newSelected(title) {
-      for (var i = 0; i < this.essentialLinks.length; i++) {
-        if (this.essentialLinks[i].title === title) {
-          this.essentialLinks[i].isSelected = true;
-        } else {
-          this.essentialLinks[i].isSelected = false;
-        }
-      }
-    },
     addExp(){
       this.$q.notify("Add new experiment.")
       //TODO add new experiment
-    }
-  },
-  created() {
-    if (this.$route.path != "/") {
-      for (var i = 0; i < this.essentialLinks.length; i++) {
-        if (this.essentialLinks[i].title === "Glavna stran") {
-          this.essentialLinks[i].isSelected = true;
-        } else {
-          this.essentialLinks[i].isSelected = false;
+    },
+    notification(message, color){
+        if(this.$q.platform.is.desktop){
+          this.$q.notify({
+            message: message,
+            color: color,
+            position: "top"
+          })
+        }else{
+          this.$q.notify({
+            message: message,
+            color: color
+          })
         }
-      }
-      this.$router.push("/");
+    },
+    refresh(){
+      this.$store.dispatch("Experiments/fetchExperiments").then(message =>{
+        this.notification(message, "info")
+      }).catch(error =>{
+        this.notification(error, "negative")
+      });
     }
-  },
-  computed: {
   }
 };
 </script>
