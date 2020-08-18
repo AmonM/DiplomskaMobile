@@ -19,6 +19,7 @@
         </q-toolbar-title>
 
         <q-btn
+          v-if="this.$route.path != '/add-new-experiment'"
           flat
           dense
           round
@@ -27,7 +28,7 @@
           @click="refresh()"
         />
         <q-btn
-          v-if="this.$route.path != '/chart'"
+          v-if="this.$route.path.includes('/experiment/')"
           flat
           dense
           round
@@ -37,8 +38,8 @@
         />
       </q-toolbar>
     </q-header>
-    <q-page-container class="content">
-      <router-view style="height:10%" />
+    <q-page-container>
+      <router-view />
     </q-page-container>
   </q-layout>
 </template>
@@ -163,6 +164,9 @@ export default {
   computed: {
     title: {
       get() {
+        if(this.$route.path == "/add-new-experiment")
+          return "Dodajanje novega poskusa"
+
         return this.$store.state.SelectedExp.Title || "Eksperiment";
       },
       set(value) {

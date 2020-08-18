@@ -21,7 +21,13 @@ const routes = [
       { path: '', name: "experiment", component: () => import('pages/Experiment.vue') },
     ]
   },
-
+  {
+    path: '/add-new-experiment',
+    component: () => import('layouts/EmptyLayout.vue'),
+    children: [
+      { path: '', name: "experiment", component: () => import('pages/AddNewExperiment.vue') },
+    ]
+  },
   // Always leave this as last one,
   // but you can also remove it
   {

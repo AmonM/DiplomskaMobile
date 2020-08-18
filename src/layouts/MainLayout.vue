@@ -42,8 +42,7 @@ export default {
   },
   methods: {
     addExp(){
-      this.$q.notify("Add new experiment.")
-      //TODO add new experiment
+      this.$router.push("/add-new-experiment")
     },
     notification(message, color){
         if(this.$q.platform.is.desktop){
