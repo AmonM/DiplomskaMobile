@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import SelectedExp from './modules/SelectedExp'
 import Experiments from './modules/Experiments'
+import Devices from './modules/Devices'
 
 
 // import example from './module-example'
@@ -22,7 +23,8 @@ export default function (/* { ssrContext } */) {
   const Store = new Vuex.Store({
     modules: {
       SelectedExp,
-      Experiments
+      Experiments,
+      Devices,
     },
 
     // enable strict mode (adds overhead!)

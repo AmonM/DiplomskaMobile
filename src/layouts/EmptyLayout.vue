@@ -10,6 +10,7 @@
           aria-label="Menu"
           @click="
             title = '';
+            $store.dispatch('Devices/setSelectedDev', '');
             $router.go(-1);
           "
         />
