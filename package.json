@@ -1,9 +1,9 @@
 {
-  "name": "test",
+  "name": "diplomska",
   "version": "0.0.1",
-  "description": "A Quasar Framework app",
-  "productName": "Quasar App",
-  "author": "AmonM <marko.amon1998@gmail.com>",
+  "description": "Application for monitoring of air quality.",
+  "productName": "SmartMonitoring",
+  "author": "Marko Amon <ma6062@student.uni-lj.si>",
   "private": true,
   "scripts": {
     "test": "echo \"No test specified\" && exit 0"

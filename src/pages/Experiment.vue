@@ -34,42 +34,47 @@
         <q-btn
           v-if="exp.t"
           class="q-ma-sm full-width"
-          color="primary"
+          v-bind:class="{ primary: isT }"
+          color="negative"
           icon="bar_chart"
           label="temperatura"
-          @click="openChart('Temperatura')"
+          @click="openChart('Temperatura','T')"
         />
         <q-btn
           v-if="exp.rh"
           class="q-ma-sm full-width"
-          color="primary"
+          v-bind:class="{ primary: isRH }"
+          color="negative"
           icon="bar_chart"
           label="vlaga"
-          @click="openChart('Vlaga')"
+          @click="openChart('Vlaga','RH')"
         />
         <q-btn
-          v-if="exp.co2"
+          v-if="exp.S1"
           class="q-ma-sm full-width"
-          color="primary"
+          v-bind:class="{ primary: isS1 }"
+          color="negative"
           icon="bar_chart"
-          label="ogljikov dioksid"
-          @click="openChart('Ogljikov dioksid')"
+          :label="exp.S1"
+          @click="openChart(exp.S1,'S1')"
         />
         <q-btn
-          v-if="exp.o2"
+          v-if="exp.S2"
           class="q-ma-sm full-width"
-          color="primary"
+          v-bind:class="{ primary: isS2 }"
+          color="negative"
           icon="bar_chart"
-          label="kisik"
-          @click="openChart('Kisik')"
+          :label="exp.S2"
+          @click="openChart(exp.S2,'S2')"
         />
         <q-btn
-          v-if="exp.c2h4"
+          v-if="exp.S3"
           class="q-ma-sm full-width"
-          color="primary"
+          v-bind:class="{ primary: isS3 }"
+          color="negative"
           icon="bar_chart"
-          label="etilen"
-          @click="openChart('Etilen')"
+          :label="exp.S3"
+          @click="openChart(exp.S3,'S3')"
         />
       </q-card-section>
     </q-card>
@@ -81,11 +86,55 @@ export default {
   name: "Experiment",
   data() {
     return {
+      isRH: 1,
+      isT: 1,
+      isS1: 1,
+      isS2: 1,
+      isS3: 1
     };
   },
   created() {
     this.getData();
+
+    this.$store.dispatch("SelectedExp/fetchGraph",this.$route.params.experiment);
     this.$nextTick(() => {
+      this.$axios
+        .get(`isData?expID=${this.$route.params.experiment}`)
+        .then(response => {
+          if(response.data[0].isRH){
+            this.isRH = response.data[0].isRH;
+          }else{
+            this.isRH = 0;
+          }
+
+          if(response.data[0].isT){
+            this.isT = response.data[0].isT;
+          }else{
+            this.isT = 0;
+          }
+
+          if(response.data[0].isS1){
+            this.isS1 = response.data[0].isS1;
+          }else{
+            this.isS1 = 0;
+          }
+
+          if(response.data[0].isS2){
+            this.isS2 = response.data[0].isS2;
+          }else{
+            this.isS2 = 0;
+          }
+
+          if(response.data[0].isS3){
+            this.isS3 = response.data[0].isS3;
+          }else{
+            this.isS3 = 0;
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+
       window.screen.orientation
         .lock("portrait")
         .then(response => {
@@ -96,9 +145,9 @@ export default {
         });
     });
   },
-  computed:{
-    exp:{
-      get(){
+  computed: {
+    exp: {
+      get() {
         return this.$store.state.SelectedExp.Exp;
       }
     }
@@ -117,29 +166,37 @@ export default {
           console.log(error);
         });
     },
-    notification(message, color){
-    if(this.$q.platform.is.desktop){
-      this.$q.notify({
-        message: message,
-        color: color,
-        position: "top"
-      })
-    }else{
-      this.$q.notify({
-        message: message,
-        color: color
-      })
-    }
+    notification(message, color) {
+      if (this.$q.platform.is.desktop) {
+        this.$q.notify({
+          message: message,
+          color: color,
+          position: "top"
+        });
+      } else {
+        this.$q.notify({
+          message: message,
+          color: color
+        });
+      }
     },
     getData() {
-      this.$store.dispatch("SelectedExp/fetchData",this.$route.params.experiment).catch(error =>{
-        this.notification("Napaka pri pridobivanju podatkov.", negative);
-      })
+      this.$store
+        .dispatch("SelectedExp/fetchData", this.$route.params.experiment)
+        .catch(error => {
+          this.notification("Napaka pri pridobivanju podatkov.", "negative");
+        });
     },
-    openChart(title) {
+    openChart(title,info) {
       this.$store.commit("SelectedExp/setTitle", title);
-      this.$router.push("/chart");
+      this.$router.push({name: "chart", params:{"info":info, "experiment":this.$route.params.experiment}});
     }
   }
 };
 </script>
+
+<style lang="sass">
+.primary
+  background-color: $primary !important
+  pointer-events: none
+</style>

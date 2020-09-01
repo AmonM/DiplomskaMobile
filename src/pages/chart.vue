@@ -11,37 +11,9 @@ export default {
   components: {
     highcharts: Chart
   },
-  created() {
-    this.$axios
-      .get(`/getData?expID=${this.$store.state.SelectedExp.Exp.id}`)
-      .then(response => {
-        var DataArray = response.data;
-        for (var index in DataArray) {
-          switch (String(this.$store.state.SelectedExp.Title).toLowerCase()) {
-            case "temperatura":
-              this.chartOptions.series[0].data.push(
-                DataArray[index].Temperature
-              );
-              break;
-            case "vlaga":
-              this.chartOptions.series[0].data.push(DataArray[index].Humidity);
-              break;
-            //TO-DO dokoncaj.
-            default:
-              break;
-          }
-        }
-
-        this.chartOptions.series[1].data = Utils.smoothData(
-          this.chartOptions.series[0].data
-        );
-      })
-      .catch(() => {
-        this.$q.notify({
-          message: "Pridobivanje podatkov ni uspelo.",
-          color: "negative"
-        });
-      });
+  created() {7
+    this.chartOptions.series[0].data = this.dataG;
+    this.chartOptions.series[1].data = Utils.smoothData(this.dataG);
 
     this.$nextTick(() => {
       window.screen.orientation
@@ -64,27 +36,43 @@ export default {
           redraw: true
         },
         yAxis: {
-          zoomEnabled: true
+          zoomEnabled: true,
+          title: {
+            text: "Vrednosti"
+          }
         },
         xAxis: {
           zoomEnabled: true,
           allowDecimals: false
         },
         title: {
-          text: "Vlaga"
+          text: ""
         },
         series: [
           {
-            name: "Vlaga %",
+            name: "Surovi podatki",
             data: [] // sample data
           },
           {
-            name: "Zglajena vlaga %",
-            data: [] // sample data
+            name: "Zglajeni podatki",
+            data: []// sample data
           }
         ]
       }
     };
+  },
+  watch:{
+    dataG: function(){
+      this.chartOptions.series[0].data = this.dataG;
+      this.chartOptions.series[1].data = Utils.smoothData(this.dataG);
+    }
+  },
+  computed:{
+    dataG:{
+      get(){
+        return this.$store.state.SelectedExp.Chart[this.$route.params.info];    
+      }
+    }
   }
 };
 </script>

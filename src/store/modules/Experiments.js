@@ -25,7 +25,7 @@ const actions = {
         .then(response => {
           var DataArray = response.data;
           var experiment;
-
+          console.log(DataArray)
           for (var data in response.data) {
             experiment = new Object();
             experiment.id = DataArray[data].exp_ID;
@@ -42,16 +42,16 @@ const actions = {
             experiment.sensors = {};
 
             experiment.sensors[1] = {
-              name: "Co2",
-              on: DataArray[data].Co2 ? true : false
+              name: DataArray[data].S1 || "S1",
+              on: DataArray[data].S1 ? true : false
             };
             experiment.sensors[2] = {
-              name: "C2H4",
-              on: DataArray[data].C2H4 ? true : false
+              name: DataArray[data].S2 || "S2",
+              on: DataArray[data].S2 ? true : false
             };
             experiment.sensors[3] = {
-              name: "O2",
-              on: DataArray[data].O2 ? true : false
+              name: DataArray[data].S3 || "S3",
+              on: DataArray[data].S3 ? true : false
             };
             experiment.sensors[4] = {
               name: "RH",

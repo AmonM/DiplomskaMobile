@@ -26,11 +26,10 @@ const actions = {
           for(var i = 0; i < DataArray.length; i++){
             var data = DataArray[i];
             var sensors = [];
-            sensors.push({name:"Co2", on: data.co2 != 0})
-            sensors.push({name:"C2H4", on: data.c2h4 != 0})
-            sensors.push({name:"O2", on: data.o2 != 0})
-            sensors.push({name:"RH", on: data.dht != 0})
-            sensors.push({name:"T", on: data.dht != 0})
+            sensors.push({name:"S1", on: data.S1 != 0})
+            sensors.push({name:"S2", on: data.S2 != 0})
+            sensors.push({name:"S3", on: data.S3 != 0})
+            sensors.push({name:"DHT", on: data.dht != 0})
             DataArray[i].sensors = sensors;
           }
           console.log(DataArray)

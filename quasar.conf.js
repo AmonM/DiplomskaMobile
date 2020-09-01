@@ -103,9 +103,9 @@ module.exports = function (/* ctx */) {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: `Data Check`,
-        short_name: `Quasar App`,
-        description: `A Quasar Framework app`,
+        name: `SmartMonitoring`,
+        short_name: `SmartMonitoring`,
+        description: `Application for monitoring of air quality.`,
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',

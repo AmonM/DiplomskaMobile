@@ -92,14 +92,14 @@ export default {
                     create: true
                   },
                   function(file) {
-                    console.log(file)
+                    console.log(file);
                     file.createWriter(
                       function(fileWriter) {
                         fileWriter.write(blob);
 
                         fileWriter.onwriteend = function() {
                           var url = file.toURL();
-                          console.log(file.toURL()+"");
+                          console.log(file.toURL() + "");
                           cordova.plugins.fileOpener2.open(url, "text/csv", {
                             error: function error(err) {
                               console.error(err);
@@ -115,7 +115,7 @@ export default {
                         };
                       },
                       function(err) {
-                        console.log(blob)
+                        console.log(blob);
                         // failed
                         console.error(err);
                       }
@@ -140,33 +140,47 @@ export default {
           console.log(error);
         });
     },
-    notification(message, color){
-      if(this.$q.platform.is.desktop){
+    notification(message, color) {
+      if (this.$q.platform.is.desktop) {
         this.$q.notify({
           message: message,
           color: color,
           position: "top"
-        })
-      }else{
+        });
+      } else {
         this.$q.notify({
           message: message,
           color: color
-        })
+        });
       }
     },
-    refresh(){
-      this.$store.dispatch("SelectedExp/fetchData",this.$route.params.experiment).then(message =>{
-        this.notification(message, "info")
-      }).catch(error =>{
-        this.notification(error, "negative")
-      });
+    refresh() {
+      if (this.$route.path === "/chart/") {
+        this.$store
+          .dispatch("SelectedExp/fetchGraph", this.$route.params.experiment)
+          .then(message => {
+            this.notification(message, "info");
+          })
+          .catch(error => {
+            this.notification(error, "negative");
+          });
+      } else {
+        this.$store
+          .dispatch("SelectedExp/fetchData", this.$route.params.experiment)
+          .then(message => {
+            this.notification(message, "info");
+          })
+          .catch(error => {
+            this.notification(error, "negative");
+          });
+      }
     }
   },
   computed: {
     title: {
       get() {
-        if(this.$route.path == "/add-new-experiment")
-          return "Dodajanje novega poskusa"
+        if (this.$route.path == "/add-new-experiment")
+          return "Dodajanje novega poskusa";
 
         return this.$store.state.SelectedExp.Title || "Eksperiment";
       },

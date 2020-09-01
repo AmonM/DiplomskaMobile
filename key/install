@@ -1,5 +1,5 @@
 #/bin/bash
 
-jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ./moj.keystore /home/amon/Desktop/Diplomska/DiplomskaMobile/dist/cordova/android/apk/release/app-release-unsigned.apk alias_name
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ./moj.keystore /home/amon/Desktop/DiplomskaMobile/dist/cordova/android/apk/release/app-release-unsigned.apk alias_name
 
-adb install /home/amon/Desktop/Diplomska/DiplomskaMobile/dist/cordova/android/apk/release/app-release-unsigned.apk
+adb install /home/amon/Desktop/DiplomskaMobile/dist/cordova/android/apk/release/app-release-unsigned.apk

@@ -5,7 +5,7 @@ const $axios = base;
 const state = {
   Exp: {},
   Title: undefined,
-  Chart: undefined,
+  Chart: {},
   Interval: "",
   Length: ""
 }
@@ -26,6 +26,7 @@ const mutations = {
     state.Length = value;
   }
 }
+
 const actions = {
   fetchData(context, res) {
     return new Promise((resolve, reject) => {
@@ -35,6 +36,7 @@ const actions = {
         })
         .then(response => {
           var Data = response.data[0];
+          console.log(Data)
           var experiment = new Object();
           experiment.id = Data.exp_ID;
           experiment.name = Data.exp_name;
@@ -48,33 +50,16 @@ const actions = {
               Data.exp_end_date.replace(" ", "T")
             ).toLocaleString();
 
-          experiment.co2 = Data.Co2;
-          experiment.c2h4 = Data.C2H4;
-          experiment.o2 = Data.O2;
+          experiment.S1 = Data.S1;
+          experiment.S2 = Data.S2;
+          experiment.S3 = Data.S3;
           experiment.rh = Data.RH;
           experiment.t = Data.T;
 
-          experiment.intM = Data.M_int.split(":")[2];
-          experiment.intH = Data.M_int.split(":")[1];
-          experiment.intD = Data.M_int.split(":")[0];
+          experiment.intM = Data.M_int
 
           var MeasureInterval = "Meritev opravljena na ";
 
-          if (experiment.intD > 2 || experiment.intD == 0) {
-            MeasureInterval += experiment.intD + " dni ";
-          } else if (experiment.intD == 2) {
-            MeasureInterval += experiment.intD + " dneva ";
-          } else {
-            MeasureInterval += experiment.intD + " dan ";
-          }
-
-          if (experiment.intH > 2 || experiment.intH == 0) {
-            MeasureInterval += experiment.intH + " ur ";
-          } else if (experiment.intH == 2) {
-            MeasureInterval += experiment.intH + " uri ";
-          } else {
-            MeasureInterval += experiment.intH + " uro ";
-          }
 
           if (experiment.intM > 2 || experiment.intM == 0) {
             MeasureInterval += experiment.intM + " minut.";
@@ -82,38 +67,8 @@ const actions = {
             MeasureInterval += experiment.intM + " minuti.";
           } else {
             MeasureInterval += experiment.intM + " minuto.";
-          }
+          }4
 
-          experiment.lengthD = Data.length.split(":")[0];
-          experiment.lengthH = Data.length.split(":")[1];
-          experiment.lengthM = Data.length.split(":")[2];
-
-          var ExperimentLength = "Trajanje ";
-
-          if (experiment.lengthD > 2 || experiment.lengthD == 0) {
-            ExperimentLength += experiment.lengthD + " dni ";
-          } else if (experiment.lengthD == 2) {
-            ExperimentLength += experiment.lengthD + " dneva ";
-          } else {
-            ExperimentLength += experiment.lengthD + " dan ";
-          }
-
-          if (experiment.lengthH > 2 || experiment.lengthH == 0) {
-            ExperimentLength += experiment.lengthH + " ur ";
-          } else if (experiment.lengthH == 2) {
-            ExperimentLength += experiment.lengthH + " uri ";
-          } else {
-            ExperimentLength += experiment.lengthH + " uro ";
-          }
-
-          if (experiment.lengthM > 2 || experiment.lengthM == 0) {
-            ExperimentLength += experiment.lengthM + " minut.";
-          } else if (experiment.lengthM == 2) {
-            ExperimentLength += experiment.lengthM + " minuti.";
-          } else {
-            ExperimentLength += experiment.lengthM + " minuto.";
-          }
-          experiment.length = ExperimentLength;
           experiment.interval = MeasureInterval;
 
           context.commit("setExperiment", experiment);
@@ -123,10 +78,50 @@ const actions = {
           reject("Podatkov ni uspelo posodobiti.")
         });
     });
+  },
+  fetchGraph({commit}, res) {
+    return new Promise((resolve, reject) => {
+      $axios
+      .get(`/getData?expID=${res}`)
+      .then(response => {
+        var DataArray = response.data;
+        var chart = {
+          S3: [],
+          S2: [],
+          S1: [],
+          T: [],
+          RH: []
+        }
+
+        for (var index in DataArray) {
+          if(DataArray[index]["S3"] != null)
+          chart.S3.push(DataArray[index]["S3"]);
+
+          if(DataArray[index]["S2"] != null)
+          chart.S2.push(DataArray[index]["S2"]);
+
+          if(DataArray[index]["S1"] != null)
+          chart.S1.push(DataArray[index]["S1"]);
+
+          if(DataArray[index]["Humidity"] != null)
+          chart.RH.push(DataArray[index]["Humidity"]);
+
+          if(DataArray[index]["Temperature"] != null)
+          chart.T.push(DataArray[index]["Temperature"]);
+        }
+
+        commit("setChart", chart);
+        resolve("Podatki posodobljeni.");
+      })
+      .catch(() => {
+        reject("Podatkov ni uspelo posodobiti.")
+      });
+    });
   }
 }
 
-const getters = {}
+const getters = {
+}
 
 export default {
   namespaced: true,

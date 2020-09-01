@@ -6,10 +6,15 @@
           v-model="selectedDevice"
           @input="setSelectedDevice()"
           :options="devices"
-          label="Izberi napravo"
+          label="Pregled naprav"
           class="full-width"
           outlined
-        />
+          hide-dropdown-icon
+        >
+        <template v-slot:append>
+          <q-icon name="search" />
+        </template>
+        </q-select>
       </div>
       <div class="text-center row">
         <used-sensor-notif
@@ -21,55 +26,37 @@
       </div>
       <div class="row text">
         Naslov poskusa
-        <q-input v-model="exTitle" dense class="full-width" outlined></q-input>
+        <q-input ref="title" v-model="exTitle" dense class="full-width" outlined :rules="[val => !!val || 'Polje je obvezno!']"></q-input>
       </div>
       <div class="row text">
         Opis poskusa
         <q-input
+          ref="desc"
           v-model="exDesc"
           dense
           type="textarea"
           class="full-width"
           outlined
+          :rules="[val => !!val || 'Polje je obvezno!']"
         ></q-input>
       </div>
       <br />
       <div class="text col-12 text-center text">Interval meritev</div>
-      <div class="row text">
-        Ure: {{ intervalH }}
-        <q-slider v-model="intervalH" :min="0" :max="3"></q-slider>
-      </div>
-      <div class="row text">
-        Minute: {{ intervalM }}
-        <q-slider v-model="intervalM" :min="0" :max="59"></q-slider>
-      </div>
-      <br />
-      <div class="text col-12 text-center text">Trajanje poskusa</div>
-      <div class="row text">
-        Dnevi: {{ lengthD }}
-        <q-slider v-model="lengthD" :min="0" :max="29"></q-slider>
-      </div>
-      <div class="row text">
-        Ure: {{ lengthH }}
-        <q-slider v-model="lengthH" :min="0" :max="23"></q-slider>
-      </div>
-      <div class="row text">
-        Minute: {{ lengthM }}
-        <q-slider v-model="lengthM" :min="0" :max="59"></q-slider>
+      <div class="row text justify-center
+Justify Content">
+        Na {{ intervalM }} min.
+        <q-slider v-model="intervalM" :min="1" :max="59"></q-slider>
       </div>
       <br />
       <div class="text col-12 text-center text">Vrednosti, ki nas zanimajo</div>
-      <div class="row">
+      <div class="row justify-center">
         <div class="col-4">
-          <q-toggle v-model="co2" label="Co2" />
-          <q-toggle v-model="c2h4" label="C2H4" />
+          <q-toggle size="4rem" v-model="S1" label="S1" />
+          <q-toggle size="4rem" v-model="S2" label="S2" />
         </div>
         <div class="col-4">
-          <q-toggle v-model="o2" label="o2" />
-          <q-toggle v-model="rh" label="R" />
-        </div>
-        <div class="col-4">
-          <q-toggle v-model="t" label="TH" />
+          <q-toggle size="4rem" v-model="S3" label="S3" />
+          <q-toggle size="4rem" v-model="DHT" label="DHT" />
         </div>
       </div>
       <div class="row col-12">
@@ -88,18 +75,13 @@ export default {
   data() {
     return {
       selectedDevice: "",
-      intervalH: 0,
       intervalM: 1,
-      lengthD: 1,
-      lengthH: 0,
-      lengthM: 30,
       exTitle: "",
       exDesc: "",
-      co2: false,
-      c2h4: false,
-      o2: false,
-      rh: false,
-      t: false
+      S1: false,
+      S2: false,
+      S3: false,
+      DHT: false
     };
   },
   created() {
@@ -109,17 +91,52 @@ export default {
     setSelectedDevice(){
       this.$store.dispatch("Devices/setSelectedDev", this.selectedDevice);
     },
+    requiredField(field){
+      if(field == "toggle"){
+        this.$q.notify({
+          message: "Izbran mora biti vsaj 1 senzor.",
+          color: "negative"
+        })
+      }else{
+        this.$q.notify({
+          message: "Polje \""+field+"\" ne sme ostati prazno.",
+          color: "negative"
+        })
+      }
+    },
     createExp(){
+      console.log(this.$refs)
+      if(!this.$refs.title.validate()){
+        this.requiredField("Naslov poskusa");
+        return;
+      }
+
+      if(!this.$refs.desc.validate()){
+        this.requiredField("Opis poskusa");
+        return;
+      }
+
+      if(!this.S3 && !this.S2 && !this.S1 && !this.DHT){
+        this.requiredField("toggle");
+        return;
+      }
+
+      var interval = "";
+
+      if(this.intervalM < 10){
+        interval = "0"+String(this.intervalM);
+      }else{
+        interval = this.intervalM;
+      }
+      return;
       var data = {
         "expName":this.exTitle,
         "expDesc":this.exDesc,
-        "length":this.lengthD+":"+this.lengthH+":"+this.lengthM,
-        "interval":"0:"+this.intervalH+":"+this.intervalM,
-        "co2":this.co2,
-        "o2":this.o2,
-        "c2h4":this.c2h4,
-        "rh":this.rh,
-        "t":this.t 
+        "interval": interval,
+        "S3":this.S3,
+        "S2":this.S2,
+        "S1":this.S1,
+        "DHT":this.DHT
       }
 
       console.log(data)
