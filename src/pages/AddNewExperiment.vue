@@ -50,14 +50,19 @@ Justify Content">
       <br />
       <div class="text col-12 text-center text">Vrednosti, ki nas zanimajo</div>
       <div class="row justify-center">
-        <div class="col-4">
-          <q-toggle size="4rem" v-model="S1" label="S1" />
-          <q-toggle size="4rem" v-model="S2" label="S2" />
-        </div>
-        <div class="col-4">
-          <q-toggle size="4rem" v-model="S3" label="S3" />
-          <q-toggle size="4rem" v-model="DHT" label="DHT" />
-        </div>
+        <q-toggle size="4rem" v-model="DHT" label="DHT" />
+      </div>
+      <div class="row">
+        <q-input :readonly="!S1"  ref="S1i" label="Senzor na S1" v-model="S1Name" @input="val => { S1Name = val.toUpperCase() }" dense class="col-6 q-py-md" outlined :rules="[val => S1rules(val)]"></q-input>
+        <q-toggle class="col-3" size="4rem" v-model="S1" label="S1" @input="S1Name = ''; change = true; $refs.S1i.resetValidation(); " />
+      </div>
+      <div class="row col-12">
+        <q-input :readonly="!S2" ref="S2i" label="Senzor na S2" v-model="S2Name" @input="val => { S2Name = val.toUpperCase() }" dense class="col-6 q-py-md" outlined :rules="[val => S2rules(val)]"></q-input>
+        <q-toggle class="col-3" size="4rem" v-model="S2" label="S2" @input="S2Name = ''; change = true; $refs.S2i.resetValidation(); " />
+      </div>
+      <div class="row col-12">
+        <q-input :readonly="!S3" ref="S3i"label="Senzor na S3" v-model="S3Name" @input="val => { S3Name = val.toUpperCase() }" dense class="col-6 q-py-md" outlined :rules="[val => S3rules(val)]"></q-input>
+        <q-toggle size="4rem" v-model="S3" label="S3" @input="S3Name = ''; change = true; $refs.S3i.resetValidation();" />
       </div>
       <div class="row col-12">
         <q-btn color="primary" class="full-width" label="Ustvari poskus" @click="createExp()" />
@@ -74,6 +79,7 @@ export default {
   },
   data() {
     return {
+      change: false,
       selectedDevice: "",
       intervalM: 1,
       exTitle: "",
@@ -81,13 +87,52 @@ export default {
       S1: false,
       S2: false,
       S3: false,
-      DHT: false
+      DHT: false,
+      S1Name: "",
+      S2Name: "",
+      S3Name: "",
     };
   },
   created() {
     this.$store.dispatch("Devices/fetchDevices");
   },
   methods: {
+    S1rules(val) {
+      // simulating a delay
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          if(this.S1 && !val){
+            resolve("Polje je obvezno.")
+          }else{
+            resolve(true)
+          }
+        }, 250)
+      })
+    },
+    S2rules(val) {
+      // simulating a delay
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          if(this.S2 && !val){
+            resolve("Polje je obvezno.")
+          }else{
+            resolve(true)
+          }
+        }, 250)
+      })
+    },
+    S3rules(val) {
+      // simulating a delay
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          if(this.S3 && !val){
+            resolve("Polje je obvezno.")
+          }else{
+            resolve(true)
+          }
+        }, 250)
+      })
+    },
     setSelectedDevice(){
       this.$store.dispatch("Devices/setSelectedDev", this.selectedDevice);
     },
@@ -116,6 +161,22 @@ export default {
         return;
       }
 
+      if(this.S1 && !this.$refs.S1i.validate()){
+        this.requiredField("Senzor na S1");
+        return;
+      }
+
+
+      if(this.S2 && !this.$refs.S2i.validate()){
+        this.requiredField("Senzor na S2");
+        return;
+      }
+
+      if(this.S3 && !this.$refs.S3i.validate()){
+        this.requiredField("Senzor na S3");
+        return;
+      }
+
       if(!this.S3 && !this.S2 && !this.S1 && !this.DHT){
         this.requiredField("toggle");
         return;
@@ -128,19 +189,28 @@ export default {
       }else{
         interval = this.intervalM;
       }
-      return;
+
+      var S1 = null, S2 = null, S3 = null;
+
+      if(this.S3Name)
+        S3 = this.S3Name
+
+      if(this.S2Name)
+        S2 = this.S2Name
+      
+      if(this.S1Name)
+        S1 = this.S1Name
+
       var data = {
         "expName":this.exTitle,
         "expDesc":this.exDesc,
         "interval": interval,
-        "S3":this.S3,
-        "S2":this.S2,
-        "S1":this.S1,
+        "S3":S3,
+        "S2":S2,
+        "S1":S1,
         "DHT":this.DHT
       }
 
-      console.log(data)
-      console.log(JSON.stringify(data))
       this.$axios.post("/new-experiment",
       JSON.stringify(data)).then((response) => {
         console.log(response)

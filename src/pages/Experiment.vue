@@ -33,6 +33,7 @@
         <q-separator class="q-mt-sm q-mb-xs bg-black full-width"></q-separator>
         <q-btn
           v-if="exp.t"
+          style="pointer-events: none"
           class="q-ma-sm full-width"
           v-bind:class="{ primary: isT }"
           color="negative"
@@ -42,6 +43,7 @@
         />
         <q-btn
           v-if="exp.rh"
+          style="pointer-events: none"
           class="q-ma-sm full-width"
           v-bind:class="{ primary: isRH }"
           color="negative"
@@ -51,6 +53,7 @@
         />
         <q-btn
           v-if="exp.S1"
+          style="pointer-events: none"
           class="q-ma-sm full-width"
           v-bind:class="{ primary: isS1 }"
           color="negative"
@@ -60,6 +63,7 @@
         />
         <q-btn
           v-if="exp.S2"
+          style="pointer-events: none"
           class="q-ma-sm full-width"
           v-bind:class="{ primary: isS2 }"
           color="negative"
@@ -69,6 +73,7 @@
         />
         <q-btn
           v-if="exp.S3"
+          style="pointer-events: none"
           class="q-ma-sm full-width"
           v-bind:class="{ primary: isS3 }"
           color="negative"
@@ -90,7 +95,7 @@ export default {
       isT: 1,
       isS1: 1,
       isS2: 1,
-      isS3: 1
+      isS3: 1,
     };
   },
   created() {
@@ -198,5 +203,5 @@ export default {
 <style lang="sass">
 .primary
   background-color: $primary !important
-  pointer-events: none
+  pointer-events: auto !important
 </style>
