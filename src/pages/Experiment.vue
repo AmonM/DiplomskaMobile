@@ -160,9 +160,7 @@ export default {
   methods: {
     end() {
       this.$axios
-        .get("/getData", {
-          params: { endExp: "true" }
-        })
+        .get("/endExperiment")
         .then(response => {
           console.log(response);
           this.getData();
